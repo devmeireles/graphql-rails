@@ -1,28 +1,54 @@
 module Types
   class QueryType < Types::BaseObject
-    field :users, [ UserType ], null: false
-    field :blogs, [ BlogType ], null: false
-    field :user, UserType, null: true do
+    # Fetch all posts (optionally paginated)
+    field :posts, [ PostType ], null: false do
+      argument :limit, Integer, required: false
+      argument :offset, Integer, required: false
+    end
+
+    def posts(limit: 20, offset: 0)
+      Post.order(created_at: :desc).limit(limit).offset(offset)
+    end
+
+    # Fetch a single post
+    field :post, PostType, null: true do
       argument :id, ID, required: true
     end
-    field :blog, BlogType, null: true do
+
+    def post(id:)
+      Post.find_by(id: id)
+    end
+
+    # Fetch all subreddits
+    field :subreddits, [ SubredditType ], null: false
+
+    def subreddits
+      Subreddit.all.order(name: :asc)
+    end
+
+    # Fetch a single subreddit
+    field :subreddit, SubredditType, null: true do
       argument :id, ID, required: true
     end
 
-    def users
-      User.all
+    def subreddit(id:)
+      Subreddit.find_by(id: id)
     end
 
-    def blogs
-      Blog.all
+    # Fetch comments for a specific post
+    field :comments_for_post, [ CommentType ], null: false do
+      argument :post_id, ID, required: true
     end
 
-    def user(id:)
-      User.find_by(id: id)
+    def comments_for_post(post_id:)
+      Comment.where(post_id: post_id, parent_comment_id: nil).order(created_at: :asc)
     end
 
-    def blog(id:)
-      Blog.find_by(id: id)
+    # Authenticated user
+    field :me, UserType, null: true
+
+    def me
+      context[:current_user]
     end
   end
 end

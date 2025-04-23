@@ -1,14 +1,9 @@
 module Types
   class UserType < Types::BaseObject
     field :id, ID, null: false
-    field :first_name, String, null: true
-    field :last_name, String, null: true
-    field :email, String, null: true
-    field :blogs, [ Types::BlogType ], null: true
-    field :user_name, String, null: true
-
-    def user_name
-      "#{object.first_name} #{object.last_name}"
-    end
+    field :username, String, null: false
+    field :email, String, null: false
+    field :karma, Integer, null: false
+    field :created_at, GraphQL::Types::ISO8601DateTime, null: false
   end
 end
