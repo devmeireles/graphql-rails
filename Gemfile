@@ -52,6 +52,8 @@ group :test do
   gem "simplecov-console", require: false
 end
 
+gem "rack-cors"
+
 gem "faker", "~> 3.5"
 
 gem "graphql", "~> 2.5"
